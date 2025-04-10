@@ -16,6 +16,8 @@ export interface Course {
   // Joined fields
   instructor_name?: string;
   enrollment_count?: number;
+  // Additional fields for student dashboard
+  progress?: number;
 }
 
 // Get all published courses

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Course } from '@/data/mockData';
+import { Course } from '@/services/courseService';
 import { useNavigate } from 'react-router-dom';
 import { Users, Clock } from 'lucide-react';
 
@@ -17,24 +17,24 @@ export const CourseCard = ({ course }: CourseCardProps) => {
     <Card className="overflow-hidden flex flex-col h-full">
       <div className="h-48 overflow-hidden">
         <img
-          src={course.thumbnail}
+          src={course.thumbnail || '/placeholder.svg'}
           alt={course.title}
           className="w-full h-full object-cover transition-transform hover:scale-105"
         />
       </div>
       <CardHeader>
         <CardTitle className="line-clamp-1">{course.title}</CardTitle>
-        <CardDescription>{course.instructor}</CardDescription>
+        <CardDescription>{course.instructor_name || 'Unknown Instructor'}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
         <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{course.description}</p>
         <div className="flex items-center text-sm text-muted-foreground mb-2">
           <Users className="h-4 w-4 mr-1" />
-          <span>{course.enrollmentCount} students</span>
+          <span>{course.enrollment_count || 0} students</span>
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <Clock className="h-4 w-4 mr-1" />
-          <span>{course.duration}</span>
+          <span>{course.level}</span>
         </div>
       </CardContent>
       <CardFooter className="pt-0">
