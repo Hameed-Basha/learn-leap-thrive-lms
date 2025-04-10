@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { mockCourses } from '@/data/mockData';
 import { Users, BookOpen, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { BarChart } from '@/components/ui/chart';
+import { BarChart } from '@/components/ui/bar-chart';
 
 export const InstructorDashboard = () => {
   // For a real application, this would filter based on the logged-in instructor

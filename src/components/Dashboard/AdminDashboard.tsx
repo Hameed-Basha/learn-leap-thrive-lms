@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { mockCourses, mockUsers } from '@/data/mockData';
 import { Users, BookOpen, Settings, BarChart4 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { BarChart } from '@/components/ui/chart';
+import { BarChart } from '@/components/ui/bar-chart';
 
 export const AdminDashboard = () => {
   const totalUsers = mockUsers.length;
