@@ -1,23 +1,51 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockCourses } from '@/data/mockData';
 import { Users, BookOpen, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { BarChart } from '@/components/ui/bar-chart';
+import { useAuth } from '@/context/AuthContext';
+import { getInstructorCourses, Course } from '@/services/courseService';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 export const InstructorDashboard = () => {
-  // For a real application, this would filter based on the logged-in instructor
-  const instructorCourses = mockCourses;
-  const totalStudents = instructorCourses.reduce((acc, course) => acc + course.enrollmentCount, 0);
-  const avgRating = 4.7; // Mocked data
+  const { user } = useAuth();
   
-  // Mocked chart data
-  const data = [
-    { name: 'Web Dev', students: 135 },
-    { name: 'JavaScript', students: 98 },
-    { name: 'React', students: 212 },
-    { name: 'Node.js', students: 87 },
-  ];
+  const { data: courses, isLoading } = useQuery({
+    queryKey: ['instructorCourses', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await getInstructorCourses(user.id);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
+  
+  // Calculate stats
+  const totalStudents = courses?.reduce((acc, course) => acc + (course.enrollment_count || 0), 0) || 0;
+  const avgRating = 4.7; // Will be calculated from reviews in a real app
+  
+  // Prepare chart data from actual courses
+  const chartData = courses?.slice(0, 5).map(course => ({
+    name: course.title.length > 15 ? course.title.substring(0, 15) + '...' : course.title,
+    students: course.enrollment_count || 0
+  })) || [];
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-6 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-[100px] w-full" />
+          ))}
+        </div>
+        <Skeleton className="h-[400px] w-full" />
+        <Skeleton className="h-[500px] w-full" />
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
@@ -31,7 +59,7 @@ export const InstructorDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{totalStudents}</div>
             <p className="text-xs text-muted-foreground">
-              Across {instructorCourses.length} courses
+              Across {courses?.length || 0} courses
             </p>
           </CardContent>
         </Card>
@@ -41,7 +69,7 @@ export const InstructorDashboard = () => {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{instructorCourses.length}</div>
+            <div className="text-2xl font-bold">{courses?.length || 0}</div>
             <p className="text-xs text-muted-foreground">
               Currently published
             </p>
@@ -69,13 +97,19 @@ export const InstructorDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="h-80">
-            <BarChart 
-              data={data}
-              index="name"
-              categories={["students"]}
-              valueFormatter={(value) => `${value} students`}
-              colors={["#9b87f5"]}
-            />
+            {chartData.length > 0 ? (
+              <BarChart 
+                data={chartData}
+                index="name"
+                categories={["students"]}
+                valueFormatter={(value) => `${value} students`}
+                colors={["#9b87f5"]}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-muted-foreground">No enrollment data available yet</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -84,18 +118,18 @@ export const InstructorDashboard = () => {
       <div>
         <h3 className="text-lg font-medium mb-4">Your Courses</h3>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {instructorCourses.map(course => (
+          {courses?.map(course => (
             <Card key={course.id} className="overflow-hidden">
               <div className="h-40 overflow-hidden">
                 <img
-                  src={course.thumbnail}
+                  src={course.thumbnail || '/placeholder.svg'}
                   alt={course.title}
                   className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
               </div>
               <CardHeader>
                 <CardTitle className="text-base">{course.title}</CardTitle>
-                <CardDescription>{course.enrollmentCount} students enrolled</CardDescription>
+                <CardDescription>{course.enrollment_count || 0} students enrolled</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between items-center">
