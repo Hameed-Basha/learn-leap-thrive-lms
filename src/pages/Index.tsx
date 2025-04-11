@@ -63,7 +63,7 @@ const Index = () => {
                       </Button>
                     </Link>
                     <Link to="/courses">
-                      <Button variant="outline" size="lg" className="w-full sm:w-auto border-white text-white hover:bg-white/10 hover:text-white">
+                      <Button variant="outline" size="lg" className="w-full sm:w-auto border-white text-white bg-[#F4D03F]/80 hover:bg-[#F4D03F] hover:text-[#1A3C34] hover:border-transparent">
                         Browse Courses
                       </Button>
                     </Link>
