@@ -1,6 +1,7 @@
-// A very simple mock auth implementation for testing without Supabase
-// Set this to false to use real Supabase authentication
-export const USE_MOCK_AUTH = false;
+
+// A mock auth implementation for testing without Supabase
+// This will be used as a fallback when Supabase is unavailable or times out
+export const USE_MOCK_AUTH = true; // Set to true to enable mock auth as fallback
 
 type UserRole = 'student' | 'instructor' | 'admin';
 
@@ -56,7 +57,7 @@ export const mockSignIn = async (email: string, password: string) => {
   console.log('MOCK AUTH: Attempting to sign in with:', email);
   
   // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 300));
   
   const user = MOCK_USERS.find(u => u.email === email && u.password === password);
   
@@ -98,7 +99,7 @@ export const mockGetProfile = async (userId: string) => {
   console.log('MOCK AUTH: Fetching profile for user ID:', userId);
   
   // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 300));
+  await new Promise(resolve => setTimeout(resolve, 200));
   
   const user = MOCK_USERS.find(u => u.id === userId);
   

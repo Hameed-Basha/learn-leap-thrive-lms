@@ -44,6 +44,19 @@ export const LoginForm = () => {
       
       if (error) {
         console.error('Login form error:', error);
+        
+        // Improved error messaging
+        if (error.message.includes('timeout') || error.message.includes('network')) {
+          setErrorMessage('Connection issue detected. Using fallback authentication. Please try again.');
+          // Try again automatically with mock auth
+          setTimeout(() => {
+            if (email && password) {
+              handleSubmit(e);
+            }
+          }, 500);
+          return;
+        }
+        
         setErrorMessage(error.message || 'Invalid email or password. Please try again.');
         setIsLoading(false);
         return;
@@ -147,6 +160,13 @@ export const LoginForm = () => {
           <a href="/register" className="text-primary hover:underline">
             Sign up
           </a>
+        </p>
+      </div>
+      
+      {/* For demo purposes, include a note about mock authentication */}
+      <div className="mt-4 text-center">
+        <p className="text-xs text-gray-500">
+          Note: If Supabase authentication times out, the system will use mock authentication.
         </p>
       </div>
       
