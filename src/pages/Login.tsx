@@ -9,7 +9,11 @@ const Login = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
+    // Add a console log to track authentication state
+    console.log('Login page - Authentication state:', isAuthenticated);
+    
     if (isAuthenticated) {
+      console.log('User is authenticated, redirecting to dashboard');
       navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
