@@ -52,12 +52,23 @@ export const LoginForm = () => {
       if (error) {
         console.error('Login form error:', error);
         
-        setErrorMessage(error.message || 'Invalid email or password. Please try again.');
+        // Show a more user-friendly error message
+        if (error.message.includes('timed out')) {
+          setErrorMessage('Login is taking longer than expected. Please try again.');
+        } else {
+          setErrorMessage(error.message || 'Invalid email or password. Please try again.');
+        }
+        
         setIsLoading(false);
         return;
       }
       
       console.log('Login successful, redirecting to dashboard');
+      
+      toast({
+        title: 'Login successful',
+        description: 'Welcome back!',
+      });
       
       // Give a small delay to allow auth state to update, then redirect
       setTimeout(() => {
@@ -94,6 +105,7 @@ export const LoginForm = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={isLoading}
+            className="w-full"
           />
         </div>
         
@@ -112,6 +124,7 @@ export const LoginForm = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={isLoading}
+            className="w-full"
           />
         </div>
         

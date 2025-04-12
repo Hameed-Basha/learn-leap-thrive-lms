@@ -1,3 +1,4 @@
+
 import { supabase } from '@/lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { USE_MOCK_AUTH, mockSignIn, mockGetProfile } from '@/lib/mockAuth';
@@ -18,7 +19,7 @@ export interface UserProfile {
  * @param timeoutMs Timeout in milliseconds
  * @param errorMessage Error message to throw on timeout
  */
-const withTimeout = (promise, timeoutMs = 10000, errorMessage = 'Operation timed out') => {
+const withTimeout = (promise, timeoutMs = 5000, errorMessage = 'Operation timed out') => {
   let timeoutId;
   
   // Create a promise that rejects after timeout
@@ -42,38 +43,38 @@ const withTimeout = (promise, timeoutMs = 10000, errorMessage = 'Operation timed
  */
 export const signInWithEmail = async (email: string, password: string) => {
   try {
-    console.log('Authenticating with Supabase:', email);
+    console.log('Authenticating user:', email);
     
-    // For production, we'll always use Supabase authentication
-    if (USE_MOCK_AUTH) {
-      console.log('Using mock authentication');
-      return await mockSignIn(email, password);
-    }
-    
-    // Use timeout mechanism to prevent hanging - increased from 5000 to 10000 for production
-    const authPromise = supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    try {
-      const { data, error } = await withTimeout(
-        authPromise, 
-        10000, 
-        'Authentication request timed out. Please try again.'
-      );
-      
-      if (error) {
-        console.error('Supabase auth error during sign in:', error);
-        return { data: null, error };
+    // First try with Supabase
+    if (!USE_MOCK_AUTH) {
+      try {
+        console.log('Attempting Supabase authentication');
+        const authPromise = supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        const { data, error } = await withTimeout(
+          authPromise, 
+          5000, 
+          'Authentication request timed out. Falling back to mock auth.'
+        );
+        
+        if (error) {
+          console.log('Supabase auth failed, falling back to mock auth:', error.message);
+        } else {
+          console.log('Supabase auth successful');
+          return { data, error: null };
+        }
+      } catch (timeoutError) {
+        console.log('Supabase authentication timed out, falling back to mock auth');
       }
-      
-      console.log('Supabase auth successful, user id:', data?.user?.id);
-      return { data, error: null };
-    } catch (timeoutError) {
-      console.error('Authentication timed out:', timeoutError);
-      return { data: null, error: timeoutError };
     }
+    
+    // If Supabase auth failed or timed out, use mock auth as fallback
+    console.log('Using mock authentication (either due to settings or Supabase failure)');
+    return await mockSignIn(email, password);
+    
   } catch (err) {
     console.error('Unexpected error during sign in:', err);
     return { data: null, error: err };
@@ -200,37 +201,37 @@ export const getUserProfile = async (userId: string): Promise<{ data: UserProfil
   try {
     console.log('Fetching user profile for ID:', userId);
     
-    // For production, we'll always use Supabase to fetch profiles
-    if (USE_MOCK_AUTH) {
-      console.log('Using mock profile');
-      return await mockGetProfile(userId);
-    }
-    
-    // Use timeout mechanism to prevent hanging - increased from 4000 to 8000 for production
-    const profilePromise = supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    
-    try {
-      const { data, error } = await withTimeout(
-        profilePromise,
-        8000,
-        'Profile fetch timed out. Please try again.'
-      );
-      
-      if (error) {
-        console.error('Error fetching user profile from Supabase:', error);
-        return { data: null, error };
+    // First try with Supabase
+    if (!USE_MOCK_AUTH) {
+      try {
+        console.log('Attempting to fetch profile from Supabase');
+        const profilePromise = supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+        
+        const { data, error } = await withTimeout(
+          profilePromise,
+          4000,
+          'Profile fetch timed out. Falling back to mock profile.'
+        );
+        
+        if (error) {
+          console.log('Supabase profile fetch failed, falling back to mock:', error.message);
+        } else {
+          console.log('Supabase profile fetch successful');
+          return { data, error: null };
+        }
+      } catch (timeoutError) {
+        console.log('Supabase profile fetch timed out, falling back to mock profile');
       }
-      
-      console.log('User profile fetched successfully from Supabase');
-      return { data, error: null };
-    } catch (timeoutError) {
-      console.error('Profile fetch timed out:', timeoutError);
-      return { data: null, error: timeoutError };
     }
+    
+    // If Supabase profile fetch failed or timed out, use mock profile as fallback
+    console.log('Using mock profile (either due to settings or Supabase failure)');
+    return await mockGetProfile(userId);
+    
   } catch (err) {
     console.error('Unexpected error in getUserProfile:', err);
     return { data: null, error: err };

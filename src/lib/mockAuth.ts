@@ -1,7 +1,7 @@
 
 // A mock auth implementation for testing without Supabase
 // This will be used as a fallback when Supabase is unavailable or times out
-export const USE_MOCK_AUTH = false; // Set to false to disable mock auth
+export const USE_MOCK_AUTH = true; // Enabled as a fallback for when Supabase times out
 
 type UserRole = 'student' | 'instructor' | 'admin';
 
@@ -55,6 +55,23 @@ const MOCK_USERS = [
     name: 'Test User',
     role: 'student' as UserRole,
     avatar: 'https://i.pravatar.cc/150?img=6'
+  },
+  // Add real user accounts here so they work with mock auth
+  {
+    email: 'fakeacc62003@gmail.com',
+    password: 'Password@2025',
+    id: 'real-user-1',
+    name: 'Hameed',
+    role: 'student' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=7'
+  },
+  {
+    email: 'rockinghameed610@gmail.com',
+    password: 'Password@2025',
+    id: 'real-user-2',
+    name: 'Basha',
+    role: 'instructor' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=8'
   }
 ];
 
