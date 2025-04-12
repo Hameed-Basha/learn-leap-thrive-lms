@@ -52,18 +52,6 @@ export const LoginForm = () => {
       if (error) {
         console.error('Login form error:', error);
         
-        // Improved error messaging
-        if (error.message.includes('timeout') || error.message.includes('network')) {
-          setErrorMessage('Connection issue detected. Using fallback authentication. Please try again.');
-          // Try again automatically with mock auth
-          setTimeout(() => {
-            if (email && password) {
-              handleSubmit(e);
-            }
-          }, 500);
-          return;
-        }
-        
         setErrorMessage(error.message || 'Invalid email or password. Please try again.');
         setIsLoading(false);
         return;
@@ -82,34 +70,6 @@ export const LoginForm = () => {
       setErrorMessage(error.message || 'An unexpected error occurred. Please try again.');
       setIsLoading(false);
     }
-  };
-
-  // Mock credential hints for development
-  const loginAsStudent = () => {
-    setEmail('student@example.com');
-    setPassword('password');
-  };
-  
-  const loginAsInstructor = () => {
-    setEmail('instructor@example.com');
-    setPassword('password');
-  };
-  
-  const loginAsAdmin = () => {
-    setEmail('admin@example.com');
-    setPassword('password');
-  };
-
-  // Submit the form after setting mock credentials
-  const loginWithMockCredentials = (mockedEmail: string, mockedPassword: string) => {
-    setEmail(mockedEmail);
-    setPassword(mockedPassword);
-    
-    // Use a timeout to ensure state updates before submission
-    setTimeout(() => {
-      const mockEvent = { preventDefault: () => {} } as React.FormEvent<HTMLFormElement>;
-      handleSubmit(mockEvent);
-    }, 100);
   };
 
   return (
@@ -171,29 +131,6 @@ export const LoginForm = () => {
             Sign up
           </a>
         </p>
-      </div>
-      
-      {/* For demo purposes, include a note about mock authentication */}
-      <div className="mt-4 text-center">
-        <p className="text-xs text-gray-500">
-          Note: If Supabase authentication times out, the system will use mock authentication.
-        </p>
-      </div>
-      
-      {/* Development options - These would be removed in production */}
-      <div className="mt-8 border-t pt-6">
-        <p className="text-sm text-gray-500 text-center mb-4">Development Options:</p>
-        <div className="flex flex-col space-y-2">
-          <Button variant="outline" size="sm" onClick={() => loginWithMockCredentials('student@example.com', 'password')} disabled={isLoading}>
-            Login as Student
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => loginWithMockCredentials('instructor@example.com', 'password')} disabled={isLoading}>
-            Login as Instructor
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => loginWithMockCredentials('admin@example.com', 'password')} disabled={isLoading}>
-            Login as Admin
-          </Button>
-        </div>
       </div>
     </div>
   );

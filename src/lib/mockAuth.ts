@@ -1,7 +1,7 @@
 
 // A mock auth implementation for testing without Supabase
 // This will be used as a fallback when Supabase is unavailable or times out
-export const USE_MOCK_AUTH = true; // Set to true to enable mock auth as fallback
+export const USE_MOCK_AUTH = false; // Set to false to disable mock auth
 
 type UserRole = 'student' | 'instructor' | 'admin';
 
