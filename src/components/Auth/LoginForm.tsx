@@ -18,8 +18,12 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Redirect if already logged in
+  // Debug authentication state
   useEffect(() => {
+    console.log('LoginForm - Authentication state:', isAuthenticated);
+    console.log('LoginForm - User:', user);
+    
+    // Redirect if already logged in
     if (isAuthenticated && user) {
       console.log('User already authenticated, redirecting to dashboard');
       navigate('/dashboard');
@@ -53,7 +57,7 @@ export const LoginForm = () => {
         console.error('Login form error:', error);
         
         // Show a more user-friendly error message
-        if (error.message.includes('timed out')) {
+        if (error.message?.includes('timed out')) {
           setErrorMessage('Login is taking longer than expected. Please try again.');
         } else {
           setErrorMessage(error.message || 'Invalid email or password. Please try again.');
@@ -80,6 +84,24 @@ export const LoginForm = () => {
       console.error('Unexpected login form error:', error);
       setErrorMessage(error.message || 'An unexpected error occurred. Please try again.');
       setIsLoading(false);
+    }
+  };
+
+  // Test credentials helper
+  const fillTestCredentials = (userType: 'student' | 'instructor' | 'admin') => {
+    switch(userType) {
+      case 'student':
+        setEmail('fakeacc62003@gmail.com');
+        setPassword('Password@2025');
+        break;
+      case 'instructor':
+        setEmail('rockinghameed610@gmail.com');
+        setPassword('Password@2025');
+        break;
+      case 'admin':
+        setEmail('admin@example.com');
+        setPassword('password');
+        break;
     }
   };
 
@@ -144,6 +166,37 @@ export const LoginForm = () => {
             Sign up
           </a>
         </p>
+      </div>
+      
+      {/* Quick access buttons for testing */}
+      <div className="mt-6 pt-4 border-t border-gray-200">
+        <p className="text-center text-xs text-gray-500 mb-2">Quick access (for testing)</p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          <button 
+            type="button"
+            onClick={() => fillTestCredentials('student')}
+            className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
+            disabled={isLoading}
+          >
+            Student
+          </button>
+          <button 
+            type="button"
+            onClick={() => fillTestCredentials('instructor')}
+            className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200"
+            disabled={isLoading}
+          >
+            Instructor
+          </button>
+          <button 
+            type="button"
+            onClick={() => fillTestCredentials('admin')}
+            className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded hover:bg-purple-200"
+            disabled={isLoading}
+          >
+            Admin
+          </button>
+        </div>
       </div>
     </div>
   );

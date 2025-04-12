@@ -1,4 +1,3 @@
-
 // A mock auth implementation for testing without Supabase
 // This will be used as a fallback when Supabase is unavailable or times out
 export const USE_MOCK_AUTH = true; // Enabled as a fallback for when Supabase times out
@@ -79,8 +78,8 @@ const MOCK_USERS = [
 export const mockSignIn = async (email: string, password: string) => {
   console.log('MOCK AUTH: Attempting to sign in with:', email);
   
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 300));
+  // Simulate network delay (but keep it short)
+  await new Promise(resolve => setTimeout(resolve, 100));
   
   // Convert email to lowercase for case-insensitive comparison
   const lowerEmail = email.toLowerCase();
@@ -130,8 +129,8 @@ export const mockSignIn = async (email: string, password: string) => {
 export const mockGetProfile = async (userId: string) => {
   console.log('MOCK AUTH: Fetching profile for user ID:', userId);
   
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 200));
+  // Simulate network delay (but keep it short)
+  await new Promise(resolve => setTimeout(resolve, 100));
   
   const user = MOCK_USERS.find(u => u.id === userId);
   
@@ -155,4 +154,4 @@ export const mockGetProfile = async (userId: string) => {
     },
     error: null
   };
-}; 
+};
