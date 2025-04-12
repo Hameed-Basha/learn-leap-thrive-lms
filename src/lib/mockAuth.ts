@@ -12,21 +12,24 @@ const MOCK_USERS = [
     password: 'password',
     id: 'mock-user-1',
     name: 'Test Student',
-    role: 'student' as UserRole
+    role: 'student' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=1' // Added avatar URLs
   },
   {
     email: 'instructor@example.com',
     password: 'password',
     id: 'mock-user-2',
     name: 'Test Instructor',
-    role: 'instructor' as UserRole
+    role: 'instructor' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=2'
   },
   {
     email: 'admin@example.com',
     password: 'password',
     id: 'mock-user-3',
     name: 'Test Admin',
-    role: 'admin' as UserRole
+    role: 'admin' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=3'
   },
   // Additional common testing users
   {
@@ -34,21 +37,24 @@ const MOCK_USERS = [
     password: 'password',
     id: 'mock-user-4',
     name: 'John Doe',
-    role: 'student' as UserRole
+    role: 'student' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=4'
   },
   {
     email: 'jane@example.com',
     password: 'password',
     id: 'mock-user-5',
     name: 'Jane Smith',
-    role: 'instructor' as UserRole
+    role: 'instructor' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=5'
   },
   {
     email: 'test@example.com',
     password: 'password',
     id: 'mock-user-6',
     name: 'Test User',
-    role: 'student' as UserRole
+    role: 'student' as UserRole,
+    avatar: 'https://i.pravatar.cc/150?img=6'
   }
 ];
 
@@ -119,7 +125,9 @@ export const mockGetProfile = async (userId: string) => {
       email: user.email,
       name: user.name,
       role: user.role,
+      avatar: user.avatar, // Include avatar in the mock profile data
     },
     error: null
   };
 }; 
+

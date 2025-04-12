@@ -8,6 +8,7 @@ export interface UserProfile {
   name: string;
   role: 'student' | 'instructor' | 'admin';
   avatar_url?: string;
+  avatar?: string; // Added this property to fix the Profile.tsx error
   bio?: string;
 }
 

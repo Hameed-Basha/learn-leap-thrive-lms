@@ -49,6 +49,9 @@ const Profile = () => {
     });
   };
   
+  // Get avatar from either avatar or avatar_url field
+  const userAvatar = user?.avatar || user?.avatar_url || '';
+  
   return (
     <PageContainer title="Profile">
       <div className="space-y-6">
@@ -56,7 +59,7 @@ const Profile = () => {
           <Card className="w-full md:w-64">
             <CardContent className="pt-6 flex flex-col items-center">
               <Avatar className="h-32 w-32 mb-4">
-                <AvatarImage src={user?.avatar} alt={user?.name} />
+                <AvatarImage src={userAvatar} alt={user?.name} />
                 <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
               </Avatar>
               <h3 className="text-xl font-medium">{user?.name}</h3>
@@ -165,3 +168,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
