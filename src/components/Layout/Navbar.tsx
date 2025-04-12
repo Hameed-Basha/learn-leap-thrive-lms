@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -93,7 +92,6 @@ export const Navbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                       <Avatar className="h-10 w-10 border-2 border-[#00C4B4]/20">
-                        <AvatarImage src={user?.avatar} alt={user?.name} />
                         <AvatarFallback className="bg-[#00C4B4]/10 text-[#00C4B4]">
                           {user?.name?.charAt(0)}
                         </AvatarFallback>

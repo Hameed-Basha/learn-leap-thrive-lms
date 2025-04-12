@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -11,26 +10,22 @@ const Index = () => {
     {
       icon: <GraduationCap className="h-16 w-16 text-primary mb-4" />,
       title: "Interactive Learning",
-      description: "Engage with courses through interactive content, quizzes, and assignments. Our platform makes learning fun and effective.",
-      image: "/images/interactive-learning.png"
+      description: "Engage with courses through interactive content, quizzes, and assignments. Our platform makes learning fun and effective."
     },
     {
       icon: <BookOpen className="h-16 w-16 text-primary mb-4" />,
       title: "Diverse Course Library",
-      description: "Access a wide range of courses across multiple disciplines and skill levels. Find exactly what you need to grow.",
-      image: "/images/course-library.png"
+      description: "Access a wide range of courses across multiple disciplines and skill levels. Find exactly what you need to grow."
     },
     {
       icon: <Users className="h-16 w-16 text-primary mb-4" />,
       title: "Expert Instructors",
-      description: "Learn from industry professionals and academic experts in their fields. Get inspired by the best in the business.",
-      image: "/images/expert-instructors.png"
+      description: "Learn from industry professionals and academic experts in their fields. Get inspired by the best in the business."
     },
     {
       icon: <Award className="h-16 w-16 text-primary mb-4" />,
       title: "Earn Certificates",
-      description: "Receive certificates upon course completion to showcase your achievements. Add them to your portfolio and LinkedIn.",
-      image: "/images/certificates.png"
+      description: "Receive certificates upon course completion to showcase your achievements. Add them to your portfolio and LinkedIn."
     }
   ];
 
@@ -41,7 +36,7 @@ const Index = () => {
         <div className="absolute inset-0 z-0 opacity-20 bg-pattern-grid"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 relative z-10">
           <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 text-white mb-10 md:mb-0">
+            <div className="w-full text-white mb-10 md:mb-0">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in">
                 Leap into Learning Excellence
               </h1>
@@ -71,13 +66,6 @@ const Index = () => {
                 )}
               </div>
             </div>
-            <div className="md:w-1/2 flex justify-center">
-              <img 
-                src="/images/hero-illustration.png" 
-                alt="Student leaping toward success" 
-                className="max-w-full h-auto animate-float"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -103,14 +91,7 @@ const Index = () => {
                 {feature.icon}
               </div>
               <h3 className="text-xl font-semibold mb-3 text-[#1A3C34]">{feature.title}</h3>
-              <p className="text-gray-600 mb-6">{feature.description}</p>
-              <div className="mb-3">
-                <img 
-                  src={feature.image} 
-                  alt={`${feature.title} preview`}
-                  className="rounded-lg w-full h-36 object-cover shadow-md"
-                />
-              </div>
+              <p className="text-gray-600">{feature.description}</p>
             </div>
           ))}
         </div>
@@ -127,19 +108,16 @@ const Index = () => {
           </p>
         </div>
         
-        <div className="relative">
-          <img 
-            src="/images/dashboard-preview.png" 
-            alt="Dashboard preview" 
-            className="w-full h-auto rounded-lg shadow-2xl border border-gray-200"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg flex items-end justify-center">
-            <Link to={isAuthenticated ? "/dashboard" : "/register"} className="mb-8">
-              <Button size="lg" className="bg-[#F4D03F] hover:bg-[#E1C136] text-[#1A3C34] font-semibold transition-transform hover:scale-105">
-                {isAuthenticated ? "Go to Your Dashboard" : "Create Your Dashboard"} <ExternalLink className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+        <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+          <h3 className="text-2xl font-semibold mb-6 text-[#1A3C34]">Access Your Personalized Dashboard</h3>
+          <p className="text-gray-600 mb-8">
+            Your dashboard is the central hub for all your learning activities. Track progress, access courses, and view achievements.
+          </p>
+          <Link to={isAuthenticated ? "/dashboard" : "/register"}>
+            <Button size="lg" className="bg-[#F4D03F] hover:bg-[#E1C136] text-[#1A3C34] font-semibold transition-transform hover:scale-105">
+              {isAuthenticated ? "Go to Your Dashboard" : "Create Your Dashboard"} <ExternalLink className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </div>
 

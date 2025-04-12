@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, BookOpen, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -120,12 +119,8 @@ export const InstructorDashboard = () => {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {courses?.map(course => (
             <Card key={course.id} className="overflow-hidden">
-              <div className="h-40 overflow-hidden">
-                <img
-                  src={course.thumbnail || '/placeholder.svg'}
-                  alt={course.title}
-                  className="w-full h-full object-cover transition-transform hover:scale-105"
-                />
+              <div className="bg-gradient-to-r from-[#1A3C34] to-[#2A5C54] h-24 flex items-center justify-center px-4">
+                <h3 className="text-white font-semibold text-lg text-center">{course.title}</h3>
               </div>
               <CardHeader>
                 <CardTitle className="text-base">{course.title}</CardTitle>

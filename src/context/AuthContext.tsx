@@ -1,16 +1,20 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/lib/supabase';
+import { 
+  getUserProfile, 
+  signInWithEmail, 
+  signOut, 
+  signUp as authSignUp, 
+  getSession, 
+  UserProfile,
+  createProfile
+} from '@/services/authService';
 
 // Define user type
-interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-  role: 'student' | 'instructor' | 'admin';
-  avatar?: string;
+interface AuthUser extends UserProfile {
+  // Extend from UserProfile if needed
 }
 
 interface AuthContextType {
@@ -20,7 +24,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<{ error: any }>;
   logout: () => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, name: string, role?: 'student' | 'instructor' | 'admin') => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,7 +39,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Set up initial session and user
     const setInitialUser = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await getSession();
+        
         if (error) {
           console.error('Error fetching session:', error);
           return;
@@ -44,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(data.session);
         
         if (data.session?.user) {
-          await getUserProfile(data.session.user);
+          await fetchUserProfile(data.session.user);
         }
       } catch (error) {
         console.error('Unexpected error during auth initialization:', error);
@@ -61,7 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(newSession);
         
         if (event === 'SIGNED_IN' && newSession?.user) {
-          await getUserProfile(newSession.user);
+          await fetchUserProfile(newSession.user);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
         }
@@ -73,18 +78,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // Fetch user profile data from profiles table
-  const getUserProfile = async (authUser: User) => {
+  // Fetch user profile data from profiles table using our service
+  const fetchUserProfile = async (authUser: User) => {
     try {
-      // Query the profiles table to get additional user data
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUser.id)
-        .single();
+      const { data: profile, error } = await getUserProfile(authUser.id);
 
       if (error) {
         console.error('Error fetching user profile:', error);
+        
+        // If the profile doesn't exist but we have user metadata, create the profile
+        const metadata = authUser.user_metadata;
+        if (metadata && (metadata.name || metadata.needsProfileCreation)) {
+          console.log('Profile not found but user metadata exists, creating profile...');
+          
+          const { data: newProfile, error: createError } = await createProfile({
+            id: authUser.id,
+            email: authUser.email || '',
+            name: metadata.name || authUser.email?.split('@')[0] || 'User',
+            role: metadata.role || 'student',
+          });
+          
+          if (createError) {
+            console.error('Failed to create profile during login:', createError);
+          } else if (newProfile) {
+            setUser(newProfile);
+            return;
+          }
+        }
+        
         // Use temporary mock user data if profile not found
         setUser({
           id: authUser.id,
@@ -96,15 +117,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       // Set the user with data from the profiles table
-      setUser({
-        id: authUser.id,
-        email: authUser.email || '',
-        name: data.name || authUser.email?.split('@')[0] || 'User',
-        role: data.role || 'student',
-        avatar: data.avatar_url,
-      });
+      setUser(profile);
     } catch (error) {
-      console.error('Error in getUserProfile:', error);
+      console.error('Error in fetchUserProfile:', error);
     }
   };
 
@@ -112,15 +127,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      const { data, error } = await signInWithEmail(email, password);
       
       if (error) {
+        console.error('Login error:', error);
         toast({
           variant: "destructive",
           title: "Login failed",
           description: error.message,
         });
+        setLoading(false);
         return { error };
+      }
+      
+      // If we have a user, fetch their profile
+      if (data?.user) {
+        try {
+          await fetchUserProfile(data.user);
+          setSession(data.session);
+        } catch (profileError) {
+          console.error('Error during profile fetch:', profileError);
+        }
       }
       
       toast({
@@ -130,10 +158,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       return { error: null };
     } catch (error: any) {
+      console.error('Error in login function:', error);
       toast({
         variant: "destructive",
         title: "Login failed",
-        description: error.message,
+        description: error.message || "An unexpected error occurred",
       });
       return { error };
     } finally {
@@ -145,7 +174,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async () => {
     try {
       setLoading(true);
-      await supabase.auth.signOut();
+      const { error } = await signOut();
+      
+      if (error) {
+        console.error('Logout error:', error);
+        toast({
+          variant: "destructive",
+          title: "Logout failed",
+          description: error.message,
+        });
+        return;
+      }
+      
       setUser(null);
       toast({
         title: "Logged out",
@@ -163,20 +203,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Sign up function
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string, role: 'student' | 'instructor' | 'admin' = 'student') => {
     try {
       setLoading(true);
-      const { error, data } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: {
-          data: {
-            name,
-          },
-        }
-      });
+      console.log('Starting signup process for:', email);
+      
+      const { data, error } = await authSignUp(email, password, name, role);
 
       if (error) {
+        console.error('Signup error:', error);
         toast({
           variant: "destructive",
           title: "Sign up failed",
@@ -185,25 +220,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error };
       }
 
-      // Create a profile record
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            { 
-              id: data.user.id,
-              name,
-              email,
-              role: 'student', // Default role for new users
-              created_at: new Date(),
-            }
-          ]);
-          
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        }
-      }
-
+      console.log('Signup successful:', data);
+      
       toast({
         title: "Account created",
         description: "Please check your email to confirm your account.",
@@ -211,6 +229,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       return { error: null };
     } catch (error: any) {
+      console.error('Unexpected signup error:', error);
       toast({
         variant: "destructive",
         title: "Sign up failed",

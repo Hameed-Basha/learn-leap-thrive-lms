@@ -1,10 +1,9 @@
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Course } from '@/services/courseService';
 import { useNavigate } from 'react-router-dom';
-import { Users, Clock, Star, BookOpen } from 'lucide-react';
+import { Users, Clock, Star, BookOpen, BookOpenCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface CourseCardProps {
@@ -19,24 +18,20 @@ export const CourseCard = ({ course }: CourseCardProps) => {
   
   return (
     <Card className="overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-      <div className="relative h-48 overflow-hidden">
-        <img
-          src={course.thumbnail || '/placeholder.svg'}
-          alt={course.title}
-          className="w-full h-full object-cover transition-transform hover:scale-105"
-        />
+      <div className="relative bg-gradient-to-r from-[#1A3C34] to-[#2A5C54] h-32 p-4 flex items-center justify-center">
+        <BookOpenCheck className="text-white h-12 w-12 opacity-20 absolute" />
         {course.level && (
           <Badge className="absolute top-2 right-2 bg-[#00C4B4]">
             {course.level}
           </Badge>
         )}
+        <h3 className="text-white font-bold text-xl text-center relative z-10 line-clamp-3">{course.title}</h3>
       </div>
       <CardHeader className="pb-2">
         <div className="flex items-center gap-1 mb-1">
           <Star className="w-4 h-4 fill-[#F4D03F] text-[#F4D03F]" />
           <span className="text-sm font-medium">{rating}</span>
         </div>
-        <CardTitle className="line-clamp-1 text-[#1A3C34]">{course.title}</CardTitle>
         <CardDescription className="flex items-center gap-1">
           <span>by</span> {course.instructor_name || 'Unknown Instructor'}
         </CardDescription>
