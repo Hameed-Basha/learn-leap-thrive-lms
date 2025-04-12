@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -31,6 +32,12 @@ export const LoginForm = () => {
     // Prevent multiple submissions
     if (isLoading) {
       console.log('Login already in progress, ignoring click');
+      return;
+    }
+    
+    // Form validation
+    if (!email || !password) {
+      setErrorMessage('Please enter both email and password');
       return;
     }
     
@@ -81,25 +88,28 @@ export const LoginForm = () => {
   const loginAsStudent = () => {
     setEmail('student@example.com');
     setPassword('password');
-    // Simulate form submission
-    const mockEvent = { preventDefault: () => {} } as React.FormEvent<HTMLFormElement>;
-    handleSubmit(mockEvent);
   };
   
   const loginAsInstructor = () => {
     setEmail('instructor@example.com');
     setPassword('password');
-    // Simulate form submission
-    const mockEvent = { preventDefault: () => {} } as React.FormEvent<HTMLFormElement>;
-    handleSubmit(mockEvent);
   };
   
   const loginAsAdmin = () => {
     setEmail('admin@example.com');
     setPassword('password');
-    // Simulate form submission
-    const mockEvent = { preventDefault: () => {} } as React.FormEvent<HTMLFormElement>;
-    handleSubmit(mockEvent);
+  };
+
+  // Submit the form after setting mock credentials
+  const loginWithMockCredentials = (mockedEmail: string, mockedPassword: string) => {
+    setEmail(mockedEmail);
+    setPassword(mockedPassword);
+    
+    // Use a timeout to ensure state updates before submission
+    setTimeout(() => {
+      const mockEvent = { preventDefault: () => {} } as React.FormEvent<HTMLFormElement>;
+      handleSubmit(mockEvent);
+    }, 100);
   };
 
   return (
@@ -174,13 +184,13 @@ export const LoginForm = () => {
       <div className="mt-8 border-t pt-6">
         <p className="text-sm text-gray-500 text-center mb-4">Development Options:</p>
         <div className="flex flex-col space-y-2">
-          <Button variant="outline" size="sm" onClick={loginAsStudent} disabled={isLoading}>
+          <Button variant="outline" size="sm" onClick={() => loginWithMockCredentials('student@example.com', 'password')} disabled={isLoading}>
             Login as Student
           </Button>
-          <Button variant="outline" size="sm" onClick={loginAsInstructor} disabled={isLoading}>
+          <Button variant="outline" size="sm" onClick={() => loginWithMockCredentials('instructor@example.com', 'password')} disabled={isLoading}>
             Login as Instructor
           </Button>
-          <Button variant="outline" size="sm" onClick={loginAsAdmin} disabled={isLoading}>
+          <Button variant="outline" size="sm" onClick={() => loginWithMockCredentials('admin@example.com', 'password')} disabled={isLoading}>
             Login as Admin
           </Button>
         </div>

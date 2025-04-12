@@ -65,10 +65,19 @@ export const mockSignIn = async (email: string, password: string) => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300));
   
-  const user = MOCK_USERS.find(u => u.email === email && u.password === password);
+  // Convert email to lowercase for case-insensitive comparison
+  const lowerEmail = email.toLowerCase();
+  
+  // Find user with case-insensitive email comparison
+  const user = MOCK_USERS.find(u => u.email.toLowerCase() === lowerEmail && u.password === password);
   
   if (!user) {
     console.log('MOCK AUTH: Invalid credentials');
+    
+    // Debug information to help identify the issue
+    console.log('MOCK AUTH: Available users:', MOCK_USERS.map(u => u.email));
+    console.log('MOCK AUTH: Attempted email:', lowerEmail);
+    
     return {
       data: null,
       error: new Error('Invalid email or password')
@@ -130,4 +139,3 @@ export const mockGetProfile = async (userId: string) => {
     error: null
   };
 }; 
-
